@@ -1,10 +1,11 @@
+--[[
 sha1 = {
 
   _VERSION     = "sha.lua 0.5.0",
 
   _URL         = "https://github.com/kikito/sha.lua",
 
-  _DESCRIPTION = [[
+  _DESCRIPTION = [==[
 
    SHA-1 secure hash computation, and HMAC-SHA1 signature computation in Lua (5.1)
 
@@ -12,9 +13,9 @@ sha1 = {
 
    And modified by Eike Decker - (http://cube3d.de/uploads/Main/sha1.txt)
 
-  ]],
+  ]==],
 
-  _LICENSE = [[
+  _LICENSE = [==[
 
     MIT LICENSE
 
@@ -60,7 +61,7 @@ sha1 = {
 
     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-  ]]
+  ]==]
 
 }
 
@@ -72,7 +73,7 @@ sha1 = {
 
 -- loading this file (takes a while but grants a boost of factor 13)
 
-local PRELOAD_CACHE = false --true
+local PRELOAD_CACHE = true
 
 
 
@@ -85,7 +86,6 @@ local BLOCK_SIZE = 64 -- 512 bits
 local floor,modf = math.floor,math.modf
 
 local char,format,rep = string.char,string.format,string.rep
-
 
 
 -- merge 4 bytes to an 32 bit word
@@ -591,4 +591,5 @@ setmetatable(sha1, {__call = function(_,msg) return sha1.sha1(msg) end })
 
 
 return sha1
+  ]]
 

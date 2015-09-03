@@ -30,7 +30,7 @@ end
 --[[
 local function createWriteURL(repo, path, txt)
     return "working-copy://x-callback-url/write/?key="..workingCopyKey.."&repo="..repo.."&path="..path.."&uti=public.txt&text="..urlencode(txt)    --the write command
-end
+endo
   ]]
 
 function openWorkingCopy(repo)

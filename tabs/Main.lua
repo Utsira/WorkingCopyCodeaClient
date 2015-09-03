@@ -8,7 +8,8 @@ supportedOrientations(CurrentOrientation)
 function setup()
    -- projectString = saveLocalData("projects", nil)
    -- local sha1 = require("sha1")
-   -- print("sha1", sha1(readProjectTab("Main")))
+    sha1.load = coroutine.create( sha1.assets)
+    --print("sha1", sha1(readProjectTab("Main")))
     projectString = readLocalData("projects", "[]")
     projects = json.decode(projectString)
     UX = {files={}, folders={}}
@@ -22,7 +23,7 @@ function setup()
         settings = Button('\u{2699}', WIDTH-70, HEIGHT-70, 50, 50, 5, function() Dialog.settings("Settings", true) end), --Settings 26ED unsupported
         add = Button("", WIDTH - 140, HEIGHT-70, 50, 50, 4, Dialog.newFile),
        -- commit = Button('Commit remote', 540, 940, 200, 60, 6, test_Clicked),
-        status = Control("", 540, HEIGHT-70, WIDTH-680, 70),
+          status = Control("", 440, HEIGHT-70, WIDTH-680, 70),
          title = Label('WCCC: Working Copy \u{21c4} Codea Client', 20.0, HEIGHT-80, 500, 45),
       --  path = Button(path, 80,HEIGHT-140,500,60, 0, Dialog.getPath)
     }
@@ -30,6 +31,7 @@ function setup()
   --  UX.main.back.fontSize = 30
     UX.main.settings.fontSize = 40
     UX.main.title.fontSize = 24
+    UX.main.status.fontSize = 12
     --[[
     UX.main.back.enabled = false
     UX.main.back.callback = function()
@@ -110,6 +112,17 @@ end
 
 function draw()
     background(184, 184, 184, 255)
+    if sha1.load then 
+        local _, progress = coroutine.resume(sha1.load)
+    if coroutine.status(sha1.load) == "dead" then
+        printLog("SHA1 caching complete")
+        sha1.load = nil
+        sha1.ready = true
+            collectgarbage()
+    else
+        printLog(progress or "")
+    end
+    end
     if updateConsole then
         UX.main.status.text = table.concat(consoleLog, "\n", math.max(1, #consoleLog-3))
         updateConsole = false
@@ -133,6 +146,8 @@ function draw()
         element:draw()
     end
     end
+    
+    
   --  if UX.display then UX.display:draw() end
 
 end

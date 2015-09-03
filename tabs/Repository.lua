@@ -82,14 +82,11 @@ end
 
 function Repository:copyIntoProject()
     for i,v in ipairs(self.tabs) do
-     --   print(DavHost..path..v.name)
-   -- http.request(DavHost..path..v.name..".lua", function(data, status) self:getTabData(data, status, self.tabs[i]) end, httpfail, {headers ={Translate="f", SendChunks = "True", AllowWriteStreamBuffering = "True"}, method = "GET"})
-      --  self:requestFile(path..v.name..".lua", function(data, status) self:getTabData(data, status, self.tabs[i]) end)
-        Request.get(self.path..self.pathToFiles..v.name..".lua", function(data, status) self:getTabData(data, status, self.tabs[i]) end)
+        Request.get(self.path..self.pathToFiles..v.name..".lua", function(data, status) self:getTabData(data, status, self.tabs[i], function(tex) self:copyIntoProjectSucceeded(tex) end) end)
     end
 end
 
-function Repository:getTabData(data, status, tab)
+function Repository:getTabData(data, status, tab, callback)
     if not data then alert(status) return end
     tab.data = data
     local dataComplete = true
@@ -97,17 +94,25 @@ function Repository:getTabData(data, status, tab)
         if not v.data then dataComplete = false end
     end
     if dataComplete then
-        local concat = {}
-        for i,v in ipairs(self.tabs) do
+        callback( self:concatenaTabs(self.tabs))
+    end
+end
+
+function Repository:concatenaTabs(dataTable)
+            local concat = {}
+        for i,v in ipairs(dataTable) do
             concat[#concat+1] = "--# "..v.name
             concat[#concat+1] = v.data
+            v.data = nil --reset, in case user tries to read again
         end
-        local copyText = table.concat(concat, "\n")
-        pasteboard.copy(copyText)
+    return table.concat(concat, "\n") 
+end
+
+function Repository:copyIntoProjectSucceeded(copyText)
+            pasteboard.copy(copyText)
         alert("Press and hold ‘new project’ on the Codea project list, and select `Paste into project’", "Project copied to clipboard")
         self.dialog = CodeBox(copyText)
         self.copyData = copyText
-    end
 end
 
 function Repository:push()
@@ -124,32 +129,30 @@ function Repository:push()
 end
 
 function Repository:pushMultiFile()   
-    local plist = readProjectPlist(self.projectName)
     printLog ("Pushing Project:", self.projectName)
-   -- http.request(DavHost..pathName.."Info.plist", writesuccess, writefail, {headers ={Translate="f", SendChunks = "True", AllowWriteStreamBuffering = "True"}, method = "PUT", data = tab})
-    self.writing = {{name = "Info.plist"}}
-
+    
+    --collate data 
+    local plist = readProjectPlist(self.projectName)    
+    self.writing = {{name = "Info", data = plist, path = "", ext = ".plist"}}
     local tabs = listProjectTabs(self.projectName) --get project tab names 
-    for i=1,#tabs do      
-        self.writing[i+1]={name = tabs[i]}
-    end
-    
-    Request.put(self.path.."Info.plist", function(data, status) self:writeSuccess(data, status, "/Info.plist", self.writing[1]) end, plist)
-    
-    for i = 2, #self.writing do
-        local tabName = self.writing[i].name
+    for i=1,#tabs do   
+        local tabName = tabs[i]
         local tab=readProjectTab(self.projectName..":"..tabName)
-        tabName = "tabs/"..tabName..".lua"
-      --  http.request(DavHost..pathName..tabName, writesuccess, writefail, {headers ={Translate="f", SendChunks = "True", AllowWriteStreamBuffering = "True"}, method = "PUT", data = tab})
-        Request.put(self.path..tabName, function(data, status) self:writeSuccess(data, status, tabName, self.writing[i]) end, tab)
+      --  tabName = "tabs/"..tabName..".lua"   
+        self.writing[i+1]={name = tabName, data = tab, path = "tabs/", ext = ".lua"}
     end
     
+  --  Request.put(self.path.."Info.plist", function(data, status) self:writeSuccess(data, status, "Info.plist", self.writing[1]) end, plist)
+    --issue write commands
+    
+    for i,v in ipairs(self.writing) do
+        Request.put(self.path..v.path..v.name..v.ext, function(data, status) self:writeSuccess(data, status, v.name, self.writing[i]) end, v.data)
+    end
     
 end
 
---[[
-function Repository:commitSingleFile()   
-    --concatenate project tabs in Codea "paste into project" format and place in pasteboard
+function Repository:pushSingleFile()   
+    --concatenate project tabs in Codea "paste into project" format and push to remote
     local tabs = listProjectTabs(self.projectName)
     local tabCon = {}
     for i,tabName in ipairs(tabs) do
@@ -157,9 +160,8 @@ function Repository:commitSingleFile()
         tabCon[#tabCon+1] = readProjectTab(tabName)
     end
     local tabStr = table.concat(tabCon, "\n")
-    Request.put(pathName..self.projectName, function(data, status) alert(self.projectName.." written to a single file", status) end)
+    Request.put(pathName..self.projectName, function(data, status) alert(self.projectName.." written to a single file", status) end, tabStr)
 end
-  ]]
 
 function Repository:writeSuccess(data, status, tabName, tab)
     tab.written = true
@@ -167,10 +169,34 @@ function Repository:writeSuccess(data, status, tabName, tab)
     for i,v in ipairs(self.writing) do
         if v.written then complete = complete + 1  end
     end
-    printLog ("written:", self.path..tabName, complete.."/"..#self.writing.." written")
+    printLog ("written "..complete.."/"..#self.writing..":", self.path..tabName)
     if complete==#self.writing then 
-        alert(#self.writing.." files transferred.", self.projectName.." written") 
+        printLog(#self.writing.." files transferred in ", self.projectName..". Verifying...") 
        -- openWorkingCopy(self.path:match("/(.-)/$"))
-        openURL("working-copy://x-callback-url/commit/?key="..workingCopyKey.."&limit=999&repo="..self.path:match("/(.-)/$")) --.."&limit=999"
+        
+            --generate key for remote files
+        table.insert(self.tabs, 1, {name = "Info"})
+        local path,ext = "", ".plist"
+        for i,v in ipairs(self.tabs) do      
+            Request.get(self.path..path..v.name..ext, function(data, status) self:getTabData(data, status, self.tabs[i], function(tex) self:verifyWriting(tex) end) end)
+            path,ext = self.pathToFiles,".lua"
+        end
+    end
+end
+
+function Repository:verifyWriting(remoteFileStr)
+    printLog("Generating SHA1 keys")
+
+    local sha1Remote = sha1( remoteFileStr )
+    -- generate key for written tabs
+    local localFileStr = self:concatenaTabs(self.writing)
+
+    local sha1Local = sha1(localFileStr)
+    self.dialog = CodeBox(remoteFileStr..string.rep("%", 40)..localFileStr)
+    if sha1Local == sha1Remote then
+        printLog("Files verified.")
+    openURL("working-copy://x-callback-url/commit/?key="..workingCopyKey.."&limit=999&repo="..self.path:match("/(.-)/$")) --.."&limit=999"
+    else
+        alert("File verification failed")
     end
 end
