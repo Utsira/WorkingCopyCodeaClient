@@ -6,23 +6,24 @@
 	<string>Unknown</string>
 	<key>Buffer Order</key>
 	<array>
-		<string>Sha1</string>
-		<string>Sha1_2</string>
 		<string>Main</string>
+		<string>UI</string>
 		<string>URLcallbacks</string>
+		<string>Finder</string>
+		<string>LocalFile</string>
+		<string>Preview</string>
+		<string>Workbench</string>
+		<string>WBLink</string>
+		<string>WBCopy</string>
+		<string>WBPush</string>
+		<string>WBPull</string>
+		<string>WBSettings</string>
 		<string>Request</string>
-		<string>Dialog</string>
-		<string>Folder</string>
-		<string>Folder2</string>
-		<string>Repository</string>
-		<string>CodeBox</string>
-		<string>Tests</string>
-		<string>MD5</string>
-		<string>Digest</string>
+		<string>Sha1</string>
 	</array>
 	<key>Dependencies</key>
 	<array>
-		<string>CiderControls7</string>
+		<string>Soda</string>
 	</array>
 	<key>Description</key>
 	<string>No description available</string>

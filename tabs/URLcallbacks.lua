@@ -1,4 +1,3 @@
--- Working Copy
 
 function urlencode(str)
     str = string.gsub (str, "\n", "\r\n")
@@ -31,24 +30,9 @@ end
 local function createWriteURL(repo, path, txt)
     return "working-copy://x-callback-url/write/?key="..workingCopyKey.."&repo="..repo.."&path="..path.."&uti=public.txt&text="..urlencode(txt)    --the write command
 endo
-  ]]
+  
 
 function openWorkingCopy(repo)
     openURL("working-copy://open?repo="..urlencode(repo))
-end
+end ]]
 
-function readProjectFile(project, name, warn)
-    local path = os.getenv("HOME") .. "/Documents/"
-    local file = io.open(path .. project .. ".codea/" .. name,"r")
-    if file then
-        local plist = file:read("*all")
-        file:close()
-        return plist
-    elseif warn then
-        alert("WARNING: unable to read " .. name)
-    end
-end
-
-function readProjectPlist(project)
-    return readProjectFile(project, "Info.plist", true)
-end

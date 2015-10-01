@@ -6,7 +6,7 @@ function Request.base:init(path, success, data)
     self.success = success --store the success callback, as it will need to be retried in the event that the connection is lost
     self.data = data
     self:setup()
-    print(self.status, self.path)
+    printLog(self.status, self.path)
     self:start()
 end
 
@@ -19,29 +19,21 @@ end
 
 function Request.base:fail(error) --if request fails, most likely we need to wake up the webDAV...
     if error == "Could not connect to the server." then --error == "The network connection was lost." or 
-       --  Dialog.getPath(error, function() self:start() end)
-     
-      --  local message = error or "Settings"
-        UX.box = Dialog.textEntry( error, "Press OK to switch to Working Copy and activate the WebDAV server.\n\nWhen you see the blue ‘Connect to WebDAV server at [host]’ message,\nswitch back to Codea (e.g. with a 4-finger swipe left).\nMake sure the host URL below matches the one in the Working Copy alert",'WebDAV host URL', DavHost, true)
-        UX.box.ok.callback = function()
-            DavHost = UX.box.field.text
-            --  requestFileNames()
+       
+       UI.settings(error, 
+        "Switching to Working Copy to activate the WebDAV server.\n\nWhen you see the blue ‘Connect to WebDAV server at [host]’ message, switch back to Codea (e.g. with a 4-finger swipe left, or, on iOS9, tapping the “back to Codea” in the top-left corner). \n\nMake sure the WebDAV address and x-callback URL key are both correct.",
+        "Activate WebDAV",
+        function()
             openURL("working-copy://x-callback-url/webdav?cmd=start&key="..workingCopyKey)
-            -- openURL(concatURL("working-copy://x-callback-url/webdav-start/?key="..workingCopyKey, "codea://")) --codea callBack dont work...
-            
-            tween.delay(1, function() self:start() end) --retry
-            --   UX.box = nil
-            --  UX.main.path.text = path
-            UX.box=nil
-            hideKeyboard()
-        end
+            tween.delay(1, function() displayMode(FULLSCREEN_NO_BUTTONS) self:start() end) --retry
+        end)
     else
         alert(error, "Error while "..self.status..self.path)
           
     end
 end
 
---4 webDAV methods: GET, PUT, PROPFIND, MKCOL
+--5 webDAV methods: GET, PUT, PROPFIND, MKCOL, DELETE
 
 Request.get = class(Request.base)
 
@@ -69,4 +61,11 @@ Request.newFolder = class(Request.base)
 function Request.newFolder:setup()
     self.arguments = {headers ={Translate="f", SendChunks = "True", AllowWriteStreamBuffering = "True"}, method = "MKCOL"}
     self.status = "Creating folder at "
+end
+
+Request.delete = class(Request.base)
+
+function Request.delete:setup()
+    self.arguments = {headers ={Translate="f", SendChunks = "True", AllowWriteStreamBuffering = "True"}, method = "DELETE"}
+    self.status = "deleting file "
 end
