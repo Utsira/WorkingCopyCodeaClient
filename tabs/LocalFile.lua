@@ -1,5 +1,14 @@
 LocalFile = class()
 
+function LocalFile:init(t) --(path, name, data, items, multiProject) 
+    
+    self.path, self.items, self.multiProject = t.path, t.items, t.multiProject
+    self.name = t.name or ""
+    self.data = t.data or ""
+    self:setupUi()
+    
+end
+
 function LocalFile:openLocalFile(project, name, warn)
     local path = os.getenv("HOME") .. "/Documents/"
     local file = io.open(path .. project .. ".codea/" .. name,"r")
@@ -39,19 +48,26 @@ function LocalFile:concatenaFiles(tab, type1, type2, type3)
     return table.concat(tabCon, "\n")
 end
 
-function LocalFile:pushSingleFile(suffix)
+function LocalFile:pushSingleFile(t) --(name, repo, repopath, callback)
+    local name = t.name or ""
+    local repopath = t.repopath or t.name 
+    local callback = t.callback or null
     self:getLocalFiles()
     local localFileStr = self:concatenaFiles(self.localFiles, "lua")
-    local pathName = self.path..urlencode(self.projectName..suffix)..".lua"
-   -- printLog("Writing", pathName)
+    local pathName = self.path..name --urlencode(self.projectName.." Installer.lua")
+ printLog("Writing", pathName)
     Request.put(pathName, 
         function() 
             
-            UI.preview:inputString(localFileStr)
-            Soda.Alert{
-                    title = "Write Successful\n\nSwitching to Working Copy",   
+          --  Soda.TextWindow{localFileStr}
+            Soda.TextWindow{
+                    title = "Write Successful",   
+                    textBody = localFileStr,
+                    ok = "Working Copy "..Soda.symbol.forward,
+                    alert = true,
                     callback = function()
-                        openURL("working-copy://x-callback-url/commit/?key="..workingCopyKey.."&limit=1&repo="..self.name.."&path="..pathName) 
+                        callback(pathName, localFileStr)
+                        openURL("working-copy://x-callback-url/commit/?key="..workingCopyKey.."&limit=1&repo="..urlencode(t.repo).."&path="..repopath) 
             --self.path:match("/(.-)/$")
                     end
                 }
