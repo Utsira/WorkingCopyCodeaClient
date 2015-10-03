@@ -5,7 +5,7 @@ function Workbench:copy()
         function() --completion callback
             local tabStr = self:concatenaFiles(self.remoteFiles, "lua") --concatena remote files that have ext lua
             
-            UI.preview:inputString(tabStr) --open string in preview
+            Soda.TextWindow{title = self.name, textBody = tabStr, close = true} --open string in preview
             pasteboard.copy(tabStr)
             local txt = "From the Codea project screen, long press “Add new project” and select “Paste into project” "
             if not self.hasPlist then

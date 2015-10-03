@@ -1,17 +1,17 @@
 Finder = class()
 
-function Finder:init(w)
+function Finder:init(w,h)
     self.paths = {"/"}
     self.titles = {"Repositories"}
     self.window = Soda.Frame{
         title = "Repositories",
-        x = 0, y = 0, w = w, h = 1,
-   --     shape = Soda.rect
+        x = 0, y = 0, w = w, h = h-1,
+        shape = Soda.rect
     }
     self.backButton = Soda.BackButton{
         parent = self.window,
         x = 5, y = -5,
-        style = Soda.style.icon,
+        -- style = Soda.style.icon,
         hidden = true,
         callback = function()
             table.remove(self.paths)
@@ -32,11 +32,10 @@ function Finder:getFileNames(data, status)
         Soda.Alert{title = status}
         return 
     end
-    UI.preview:clearString()
+
     local listText = {}
     self.items = {} 
     self.remoteFiles = {}
-    if self.list then self.list.kill = true end
 
     parsePropfind(data, function(i, t) listText[i], self.items[i] = self:addLine(t) end)
     
@@ -44,24 +43,28 @@ function Finder:getFileNames(data, status)
     
     if #self.paths > 1 then 
         
-        if #self.paths == 2 and not UI.workbench.active then
+        if #self.paths == 2 and not workbench then
+            
             UI.settingsButton:hide()
             self.backButton:show()
-            UI.workbench:activate(self.paths[2], self.titles[2], data, table.copy(self.items))
-           -- UI.link.callback = function() self:linkProject() end
+      --  workbench:activate(self.paths[2], self.titles[2], data, table.copy(self.items))
+          workbench = Workbench{path = self.paths[2], name = self.titles[2], data = data, items = table.copy(self.items)}
         end
     else   --depth 1
 
-        UI.workbench:deactivate()
-      --  UI.workbench.kill = true
+      --  workbench:deactivate()
+        if workbench then workbench:deactivate() end
+        workbench = nil
       --  UI.workbench = Workbench()
         UI.settingsButton:show()
         self.backButton:hide()
     end
     
+    if self.list then self.list.kill = true end
     self.list = Soda.List{
         parent = self.window,
         x = 0, y = 0, w = 1, h = -50,
+        title = "finder list",
         text = listText,
         callback = function(sender, selected, txt) self:selectItem(selected) end
     }  
@@ -69,11 +72,12 @@ function Finder:getFileNames(data, status)
 end
 
 function parsePropfind(data, callback, callbackFinish)
+    printLog(data)
     local i = 0
     for pathName, info in data:gmatch("<D:href>(.-)</D:href>(.-)[\n\r]") do
         i = i + 1
         if i>1 then --the first entry is just the root
-            local name = pathName:match("/([^/]-)$") --strip out path from name
+            local name = pathName:match("/([^/]-)$"):gsub("%%20", " ") --strip out path from name; put spaces back
             --print("name", name)
             local extension = name:match(".-%.(.-)$") --file extension  
             local nameNoExt = name:match("(.-)%..-$")
@@ -89,7 +93,7 @@ end
 
 function Finder:addLine(t)
 
-    local printName = t.name:gsub("%%20", " ") --put spaces back
+    local printName = t.name --:gsub("%%20", " ") --put spaces back
     if t.collection then
     
         printName = "\u{1f4c2}  "..printName
@@ -115,8 +119,9 @@ function Finder:selectItem(selected) --sender is always self.list
         self:requestFileNames()
  
     else
-
-        Request.get(item.pathName, function(data)  UI.preview:inputString(data) end)
+        Request.get(item.pathName, function(data)  
+            preview=Preview{path = item.pathName, name = item.name, data = data, multiProject = workbench.multiProject, repo = self.titles[2]} 
+        end)
     end
 end
 

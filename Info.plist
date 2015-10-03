@@ -11,13 +11,14 @@
 		<string>URLcallbacks</string>
 		<string>Finder</string>
 		<string>LocalFile</string>
+		<string>LFLink</string>
 		<string>Preview</string>
 		<string>Workbench</string>
-		<string>WBLink</string>
+		<string>WBUI</string>
+		<string>WBAddNew</string>
 		<string>WBCopy</string>
 		<string>WBPush</string>
 		<string>WBPull</string>
-		<string>WBSettings</string>
 		<string>Request</string>
 		<string>Sha1</string>
 	</array>

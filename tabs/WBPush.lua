@@ -137,7 +137,7 @@ function Workbench:verifyWrite()
                     end
                 }
             else --verfication failed
-                UI.preview:inputString(table.concat({"Verification", "Remote Files", remoteFileStr, "Local Files", localFileStr}, "\n\n##############################\n\n")) --open string in preview
+                UI.diffViewer("Verification failed", localFileStr, remoteFileStr)
             end
         end
     )

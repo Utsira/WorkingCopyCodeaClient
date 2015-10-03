@@ -1,189 +1,49 @@
 Workbench = class(LocalFile)
 
-function Workbench:init(x,y)
-    self.window = Soda.Frame{
-        x = x, y = y, w = 0, h =0,
-        title = "Working Copy \u{21c4} Codea Client",
-        shape = Soda.RoundedRectangle,
-        shapeArgs = {corners = 1 | 8}
-    }
+function Workbench:init(t) --(path, name, data, items) 
+    LocalFile.init(self, t)
     
-    Soda.Button{
-        parent = self.window,
-        title = "WorkingCopy\u{ff1e}",
-        x = -50, y = -5, w = 150, h = 40,
-      --  style = Soda.style.icon,
-        callback = function()
-            self:openWorkingCopy()
-        end
-    }
-    self.ui = {}
-    
-    local margin, width = 3, 1/4
-    local w2,w3 = width * 0.5, width * 0.97
-    
-    local single = Soda.Frame{
-        parent = self.window,
-        x = 0, y = 0, w = 1, h = 200,
-      --  shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-     --   inactive = true,
-      --  content = "Repository is linked to a single Codea project. Its tabs will be pushed as separate lua files to a /tabs folder in the repository. The Info.plist will be saved in the root to preserve tab order. This is the recommended mode for larger Codea projects."
-    
-    }
-    
-    local multi = Soda.Frame{
-        parent = self.window,
-        x = 0, y = 0, w = 1, h = 200,
-        --shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-     --   inactive = true,
-     --   content = "Push projects to the root of the repository as single files in Codea's “paste into project” format. This is for backing up smaller projects that do not require a dedicated repository, or for adding installers for larger projects." 
-    }
-    
-    self.ui.multiSingle = Soda.DropdownList{
-        parent = self.window,
-        x = margin, y = 150, w = 400, h = 40,
-        title = "Repository is for",
-        text = {"a single Codea project", "multiple Codea projects"},
-        panels = {single, multi},
-        default = 1,
-        inactive = true
-    }
-    
-    Soda.QueryButton{
-        parent = single,
-        x = -10, y = -10, 
-        style = Soda.style.icon,
-        callback = function()
-            Soda.Alert{w = 0.5, h = 0.3, title = "Single Project Repository", content = "Repository is linked to a single Codea project. Its tabs will be pushed as separate lua files to a /tabs folder in the repository. The Info.plist will be saved in the root to preserve tab order. This is the recommended mode for larger Codea projects."}
-        end
-    }
-    
-    Soda.QueryButton{
-        parent = multi,
-        x = -10, y = -10, 
-        style = Soda.style.icon,
-        callback = function()
-            Soda.Alert{w = 0.5, h = 0.3, title = "Multiple Project Repository", content = "Multiple Codea projects can be pushed to the root of the repository. Projects are pushed as single files in Codea's “paste into project” format. This is for backing up smaller projects that do not require a dedicated repository." }
-        end
-    }
-    
-    self.ui.copy = Soda.Button{
-        parent = single,
-        x = w2, y = 50, w = w3, h = 60,
-        title = "Copy-into-\nproject",
-        inactive = true,
-        callback = function() self:copy() end
-    }
-    
-    self.ui.link = Soda.Button{
-        parent = single,
-        x = w2 + width, y = 50, w = w3, h = 60,
-        title = "Link",
-        inactive = true,
-        callback = function() self:linkDialog() end
-    } 
-    
-    self.ui.linkStatus = Soda.Frame{
-        parent = single,
-        x = margin, y = -50, w = -margin, h = 60,   
-       -- title = "" 
-    }
-    
-    self.ui.push = Soda.Button{
-        parent = single,
-        x = w2 + width * 2, y = 50, w = w3, h = 60,
-        title = "Push",
-        inactive = true,
-        callback = function() self:push() end
-    }   
-    
-    self.ui.pull = Soda.Button{
-        parent = single,
-        x = w2 + width * 3, y = 50, w = w3, h = 60,
-        title = "Pull",
-        inactive = true,
-    } 
-    
-    self.ui.pushInstaller = Soda.Switch{
-        parent = single,
-        x = -margin*2, y = margin, w = 0.7, 
-        title = "Push paste-into-project Installer to root"
-    }
-    
-    self.ui.addProject = Soda.Button{
-        parent = multi,
-        x = margin, y = margin, w = 0.49, h = 60,
-        title = "Add new project\npaste-into-project format",
-        inactive = true,
-        callback = function() self:pushSingleFile(self.ui.pushSingleSuffix:output()) end
-    }   
-    
-    --[[
-    self.ui.pushSingleSuffix = Soda.TextEntry{
-        parent = singleFile,
-        x = -margin, y = margin, w = 0.49, h = 40,
-        title = "Name suffix:",
-        default = "Installer",
-        inactive = true,
-    }
-    
-    self.ui.settings = Soda.Toggle{
-        parent = self.window,
-        x = w2 + width*4, y = margin, w = w3, h = 60,
-        title = "Repository\nsettings",
-        inactive = true,
-        callback = function() self.ui.settingsDialog:show() end
-    }
-      ]]
-end
-
-
-function Workbench:deactivate()
-    
-    self.active = false
-    self.remoteFiles = nil
-    self.localFiles = nil
-    self.rosterBuilt = false
-    self.window.title = "Working Copy \u{21c4} Codea Client"
-    self.ui.linkStatus.content = ""
-    self:unlink()
-   -- self.window:deactivate()
-    
-    for k,v in pairs(self.ui) do
-        v:deactivate()
-    end
-    
-end
-
-function Workbench:activate(path, name, data, items)
-    self.path, self.name = path, name
-    self.active = true
-    self.window.title = name
-    self.items = items
-    
-    --self:settings()
-    --self.ui.settings:activate()
     --check whether linked to Codea project
-    self.ui.link:activate()
-    self.ui.multiSingle:activate()
-    if projects[path] then --linked
+    if projects[t.path] and projects[t.path].name then --linked
         self:link()
     else
         self.ui.linkStatus.content = "Not linked to any project"
     end
-    
+
     --build roster of remote files
     self.remoteFiles = {}
     self.subFolders = {}
     self.plistFiles = {}
     
     --check for .plist file
-    if data:match("<D:href>.-Info%.plist</D:href>") then
-        Request.get(path.."Info.plist", function(d, status) self:readPlist(d, status) end)
+    if t.data:match("<D:href>.-Info%.plist</D:href>") then
+        Request.get(t.path.."Info.plist", function(d, status) self:readPlist(d, status) end)
     else --no plist
         self:findFilesFolders()
     end
+    
+end
 
+function Workbench:deactivate()
+    
+    --[[
+    self.active = false
+    self.remoteFiles = nil
+    self.localFiles = nil
+    self.rosterBuilt = false
+    self.window.title = "Working Copy \u{21c4} Codea Client"
+    self.ui.linkStatus.content = ""
+    self.ui.multiSingle:clearSelection()
+    self:unlink()
+   -- self.window:deactivate()
+    
+      ]]
+    
+    for k,v in pairs(self.ui) do
+   --  v:deactivate()
+        v.kill = true
+    end
+    
 end
 
 function Workbench:readPlist(data, status) 
@@ -261,18 +121,11 @@ function Workbench:checkRemoteFiles() --remove files from remoteFiles roster tha
     --roster build complete, activate controls
     self.rosterBuilt = true
     self.ui.copy:activate()
-   -- self.ui.pushSingle:activate()
+    
    -- self.ui.pushSingleSuffix:activate()
     if self.projectName then
+        self.ui.pushInstaller:activate()
         self.ui.push:activate()
         self.ui.pull:activate()
-    end
-end
-
-function Workbench:openWorkingCopy()
-    if self.name then
-        openURL("working-copy://open?repo="..urlencode(self.name))
-    else
-        openURL("working-copy://open")
     end
 end

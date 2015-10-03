@@ -10,12 +10,12 @@ function setup()
     parameter.watch("#Soda.items")
     Soda.setup()
     sha1.load = coroutine.create( sha1.assets)
-    projectString = readLocalData("projects", "[]")
+    local projectString = readLocalData("projects", "[]")
     projects = json.decode(projectString)
     
     consoleLog = {}
     UI.main()
- --requestFileNames("/")
+    printLog(projectString)
 end
 
 function draw()
