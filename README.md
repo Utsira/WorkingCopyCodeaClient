@@ -10,7 +10,7 @@ A [Codea](http://codea.io) program that connects Codea to [Working Copy](http://
 
 * Switch branches in Working Copy, or checkout an earlier version of your project, then pull that version into Codea
 
-* Easily import multi-file repositories that don't have installers with WCCC's "Copy as single file" feature, which concertinas the remote files using Codea's "paste into project" format
+* Easily import multi-file repositories that don't have installers with WCCC's "Copy as single file" feature, which concatenates the remote files using Codea's "paste into project" format
 
 * SHA1 authentication verifies write operations and warns you if you are in danger of overwriting data
 
@@ -62,7 +62,7 @@ This is recommended for working with large projects. The repository houses a sin
 
 ##### Copy as a single file
 
-Multiple lua files are concertinaed together in "paste into project" format. If WCCC sees an `Info.plist` file in the root of the repository, it reads that first to determine the order to concertina the lua files in. If additional lua files are found not mentioned in `Info.plist`, these will be added to the end of the concertina-ed file. If no `Info.plist` file is found, WCCC will concertina the files in the order in which they appear in the repository (nb this could be wrong, and you might have to reorder the tabs once you paste the project in Codea). WCCC expects to find all of the .lua files in one location (ie a single folder on the root, or just in the root itself), and will only search folders one layer past the root of the repository
+Multiple lua files are concatenated together in "paste into project" format. If WCCC sees an `Info.plist` file in the root of the repository, it reads that first to determine the order to concatenate the lua files in. If additional lua files are found not mentioned in `Info.plist`, these will be added to the end of the concatenate-ed file. If no `Info.plist` file is found, WCCC will concatenate the files in the order in which they appear in the repository (nb this could be wrong, and you might have to reorder the tabs once you paste the project in Codea). WCCC expects to find all of the .lua files in one location (ie a single folder on the root, or just in the root itself), and will only search folders one layer past the root of the repository
 
 ##### Link/ Relink
 
@@ -78,7 +78,7 @@ Pulls the content of the remote repository into the Codea project. If you have p
 
 ##### Push installer to root
 
-Saves an additional `Installer.lua` file to the root of the repository. The installer contains all of the project's tabs, concertinaed together into a single file using Codea's "paste-into-project" format. This makes it easy for people not using WCCC to install your project, by copying the contents of the installer, and then long pressing on the "add project" button in Codea's main screen, and selecting "paste into project". The installer files that you used to install Soda and WCCC were created in this way.
+Saves an additional `Installer.lua` file to the root of the repository. The installer contains all of the project's tabs, concatenated together into a single file using Codea's "paste-into-project" format. This makes it easy for people not using WCCC to install your project, by copying the contents of the installer, and then long pressing on the "add project" button in Codea's main screen, and selecting "paste into project". The installer files that you used to install Soda and WCCC were created in this way.
   
 ### 2. Multiple Project Repositories. 
 
