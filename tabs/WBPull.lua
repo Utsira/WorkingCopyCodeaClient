@@ -67,12 +67,14 @@ function Workbench:writeToTabs()
     end
     
     --verify 
-    local localFileString = self:concatLocalFiles() -- reread local files and get hash
+    local localFileString = self:concatLocalFiles() -- reread local files 
     local remoteFileString = self:concatenaFiles(self.remoteFiles, "lua", "plist")
-    
-    if self:verify(sha1(localFileString), sha1(remoteFileString)) then 
+    local localFileHash = sha1(localFileString)
+    local remoteFileHash = sha1(remoteFileString)
+    projects[self.path].hash = localFileHash
+    if self:verify(localFileHash, remoteFileHash) then 
        -- Soda.Alert{title = "Pull verified", content = "hash "..localFileHash }
-        projects[self.path].hash = localFileHash
+        
         UI.diffViewer("Pull Verified", localFileString, remoteFileString)
     else
         UI.diffViewer("Pull Verify Failed", localFileString, remoteFileString)

@@ -72,7 +72,7 @@ function Finder:getFileNames(data, status)
 end
 
 function parsePropfind(data, callback, callbackFinish)
-    printLog(data)
+   -- printLog(data)
     local i = 0
     for pathName, info in data:gmatch("<D:href>(.-)</D:href>(.-)[\n\r]") do
         i = i + 1

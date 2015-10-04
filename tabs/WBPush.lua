@@ -123,21 +123,23 @@ function Workbench:verifyWrite()
     printLog("Verifying push")
     self:readRemoteFiles( --read remote files
         function() --completion callback
-            local remoteFileStr = self:concatenaFiles(self.remoteFiles, "lua", "plist") --concatena remote files that have ext lua or plist
-            local localFileStr = self:concatenaFiles(self.localFiles, "lua", "plist")
-            local hash = self:verify(sha1(localFileStr), sha1(remoteFileStr)) --7. verify
-            if hash then 
-                printLog("Write verified on hash:", hash)
-                projects[self.path].hash = hash
-                saveLocalData("projects", json.encode(projects))
+            local remoteFileString = self:concatenaFiles(self.remoteFiles, "lua", "plist") --concatena remote files that have ext lua or plist
+            local localFileString = self:concatenaFiles(self.localFiles, "lua", "plist")
+            local localFileHash = sha1(localFileString)
+            local remoteFileHash = sha1(remoteFileString)
+            projects[self.path].hash = remoteFileHash
+            saveLocalData("projects", json.encode(projects))
+            if self:verify(localFileHash, remoteFileHash) then --7. verify
+                printLog("Write verified on hash:", remoteFileHash)
+                
                 Soda.Alert{
-                    title = "Write Successful\n\nHash:"..hash.."\n\nSwitching to Working Copy",   
+                    title = "Write Successful\n\nHash:"..remoteFileHash.."\n\nSwitching to Working Copy",   
                     callback = function()
                         openURL("working-copy://x-callback-url/commit/?key="..workingCopyKey.."&limit=999&repo="..self.path:match("/(.-)/$")) --8. commit
                     end
                 }
             else --verfication failed
-                UI.diffViewer("Verification failed", localFileStr, remoteFileStr)
+                UI.diffViewer("Verification failed", localFileString, remoteFileString)
             end
         end
     )

@@ -16,30 +16,15 @@ function Workbench:setupUi(x,y)
         parent = self.ui.window,
         x = 0, y = -45, w = 1, h = 215,
         shape = Soda.RoundedRectangle, subStyle = {"translucent"},
-     --   inactive = true,
-      --  content = "Repository is linked to a single Codea project. Its tabs will be pushed as separate lua files to a /tabs folder in the repository. The Info.plist will be saved in the root to preserve tab order. This is the recommended mode for larger Codea projects."
     
     }
-    
-    --[[
-    local dummy = Soda.Frame{
-        parent = self.window,
-        x = 0, y = 0, w = 1, h = 200,
-        title = "dummy",
-         shape = Soda.RoundedRectangle, --subStyle = {"translucent"},
-     --   inactive = true,
-      --  content = "Repository is linked to a single Codea project. Its tabs will be pushed as separate lua files to a /tabs folder in the repository. The Info.plist will be saved in the root to preserve tab order. This is the recommended mode for larger Codea projects."
-    }
-      ]]
-    
-    
+
     local multi = Soda.Frame{
         parent = self.ui.window,
         title = "multi",
         x = 0, y = -45, w = 1, h = 110,
         shape = Soda.RoundedRectangle, subStyle = {"translucent"},
-     --   inactive = true,
-     --   content = "Push projects to the root of the repository as single files in Codea's “paste into project” format. This is for backing up smaller projects that do not require a dedicated repository, or for adding installers for larger projects." 
+
     }
  --   local single, multi = self.ui.single, self.ui.multi
     local default

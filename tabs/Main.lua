@@ -1,5 +1,7 @@
 -- Working Copy Codea WebDAV Client 
 
+assert(SodaIsInstalled, "Set Soda as a dependency of this project") --produces an error if Soda not a dependency
+
 displayMode(OVERLAY)
 displayMode(FULLSCREEN_NO_BUTTONS)
 
@@ -15,7 +17,7 @@ function setup()
     
     consoleLog = {}
     UI.main()
-    printLog(projectString)
+   -- printLog(projectString)
 end
 
 function draw()
