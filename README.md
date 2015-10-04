@@ -2,6 +2,18 @@
 
 A [Codea](http://codea.io) program that connects Codea to [Working Copy](http://workingcopyapp.com), a full-featured iOS Git client.
 
+##Features
+
+* Browse all of your repositories from within Codea
+
+* Link remote files and folders to Codea projects for two-way version control
+
+* Switch branches in Working Copy, or checkout an earlier version of your project, then pull that version into Codea
+
+* Easily import multi-file repositories that don't have installers with WCCC's "Copy as single file" feature, which concertinas the remote files using Codea's "paste into project" format
+
+* SHA1 authentication verifies write operations and warns you if you are in danger of overwriting data
+
 Brings the full power of Git source control and social coding to Codea. When you switch to a different branch of your repository, or checkout a previous version, those changes are reflected in the Working Copy WebDAV. This makes it easy to switch between different branches of a project, or to pull a previous version of the project into Codea. All of this is done locally, on device. No web connection is needed. When you get back online, you can merge your changes with your remote repositories on GitHub or BitBucket. WCCC's support for Codea's paste-into-project format means that you can easily install multi-file Git repositories in Codea.
 
 ## Installation
