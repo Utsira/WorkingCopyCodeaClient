@@ -28,21 +28,25 @@ Getting everything installed is a bit fiddly. But, you only have to follow these
 
 4. Make Soda a dependency of WCCC: In the code editor of the WCCC project, press the + sign in the top-right corner and put a check in the box next to "Soda".
 
-5. WCCC uses 2 technologies to communicate with Working Copy: x-callback URLs and WebDAV. These both need to be turned on in Working Copy settings.
+5. WCCC uses 2 technologies to communicate with Working Copy: x-callback URLs and WebDAV. These both need to be setup. When you first run WCCC a dialog will prompt you to enter the x-callback key and WebDAV URL, and and giving you a button to switch to Working Copy and activate the WebDAV. 
 
-  - Turn on x-callbacks and copy the key to your clipboard:
+  ![The Activate WevDAV prompt](https://puffinturtle.files.wordpress.com/2015/10/image4.jpeg)
+
+  Ignore the text entry fields and press the "Activate WebDAV" button. Working Copy will become foregrounded, and you will see a red error message warning you that the x-callback key is incorrect. Press the red error message, and Working Copy will open the x-callback settings pane. Copy the x-callback key to your clipboard:
   
-    ![x-callback settings](https://puffinturtle.files.wordpress.com/2015/10/image5.jpeg)
+  ![x-callback settings](https://puffinturtle.files.wordpress.com/2015/10/image5.jpeg)
   
-  - Currently, there is no support for digest authentication in Codea (I'm  looking into whether this can be implemented now that Codea has sockets). Therefore, you will have to clear both the username and the password fields, and turn off remote connections. This means that Working Copy's WebDAV will only run on-device (ie only other apps on your iPad can see it). It is highly recommended that you do not turn on remote connections without a password and username set. The URL should be `http://localhost:8080/`
+  - Now, staying in Working Copy, go to the WebDAV settings pane. Currently, there is no support for digest authentication in Codea (I'm  looking into whether this can be implemented now that Codea has sockets). Therefore, you will have to delete the contents of both the WebDAV username and the password fields (so they are both blank), and turn off remote connections. This means that Working Copy's WebDAV will only run on-device (ie only other apps on your iPad can see it). It is highly recommended that you do not turn on remote connections without a password and username set. The URL should be `http://localhost:8080/`
   
   ![WebDAV settings](https://puffinturtle.files.wordpress.com/2015/10/image.jpeg)
   
-  6. The first time you run WCCC you will get a dialog prompting you to enter your x-callback key and the WebDAV URL. Paste the key into the text entry field. WCCC will then wake the WebDAV. Switch back to Codea and start working.
+  6. You can now switch back to Codea and to WCCC using your favourite app switching method (eg a 4-finger swipe right, or, on iOS 9, by pressing the "Back to Codea" button in the top-right corner. Paste the x-callback key into the text entry field. 
+  
+  ![WCCC settings window](https://puffinturtle.files.wordpress.com/2015/10/image6.jpeg)
   
   > ###About WebDAV
-  > When WorkingCopy is in the background, the WebDAV server is shut off after a few minutes. WCCC detects this and automatically wakes the WebDAV up again. When this happens you'll see a prompt telling you that the WebDAV needs to be woken up. 
-  > ![Prompt to wake the WebDAV](https://puffinturtle.files.wordpress.com/2015/10/image4.jpeg)
+  > When WorkingCopy is in the background, the WebDAV server is shut off after a few minutes. WCCC detects this and automatically wakes the WebDAV up again. When this happens you'll see the same prompt that you saw on launch telling you that the WebDAV needs to be woken up. 
+  > 
   > When you press "Activate WebDAV", Working Copy will be foregrounded or opened, and the WebDAV started. When you see a blue "Connect to WebDAV server at" message in WorkingCopy, you can switch back to Codea, eg with a four-finger app-switch gesture, or, on iOS 9, by pressing the "Back to Codea" button in the top-left corner
   > ![WebDAV is awake](https://puffinturtle.files.wordpress.com/2015/10/image2.jpeg)  
   
