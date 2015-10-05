@@ -2,7 +2,7 @@ function Workbench:setupUi(x,y)
     local x,y = guidex, guidey
     self.ui = {} 
    self.ui.window = Soda.Frame{
-        x = x, y = y, w = 0, h =-20,
+        x = x, y = y, w = 0, h =-menuHeight,
         title = self.name, -- "Working Copy \u{21c4} Codea Client",
         content = ""
       --  shape = Soda.RoundedRectangle,

@@ -2,6 +2,7 @@ UI = {}
 
 function UI.main()
     guidex, guidey = 0.33, -265
+    menuHeight = 25
     local margin = 5
     
     --[[
@@ -11,17 +12,17 @@ function UI.main()
       ]]
     
     UI.menubar = Soda.Frame{
-        x = 0, y = -0.001, w = 1, h = 20,
+        x = 0, y = -0.001, w = 1, h = menuHeight,
         shape = Soda.rect,
         title = "Working Copy \u{21c4} Codea Client",
-        label = {x = 0.5, y = 0},
+        label = {x = 0.5, y = 0.5},
         style = {shape = {fill = color(0), noStroke = true}, text = {fill = color(200), fontSize = 0.75}}
     }
     
     Soda.Button{
         parent = UI.menubar,
         title = Soda.symbol.back.." Open in Working Copy",
-        x = 0, y = 0, w = 200, h = 20,
+        x = 0, y = 0, w = 200, h = menuHeight,
       --  style = Soda.style.icon,
         shape = null,
         style = {shape = {},  text = {fill = color(200), fontSize = 0.75}},
@@ -36,20 +37,21 @@ function UI.main()
     
     Soda.CloseButton{
         parent = UI.menubar,
-        x = -0.001, y = -0.001, w = 50, h = 25,
+        x = -0.001, y = 0.5, w = 50, h = menuHeight + 10,
         shape = null,
         style = {shape = {},  text = {fill = color(200), fontSize = 1}},
         callback = function()
             close()
         end
     }
+    
     UI.console = Soda.TextScroll{
         x = guidex, y = 0, w = 0, h = 0.2,
         shape = Soda.RoundedRectangle,
         textBody = "\n#### Working Copy Codea Client ####"
     }
     
-    UI.finder = Finder(guidex, -20)
+    UI.finder = Finder(guidex, -menuHeight)
     
   --workbench = Workbench(guidex, guidey)
     
@@ -81,16 +83,30 @@ function UI.settings(title, content, ok, callback, cancel)
     
     local key = Soda.TextEntry{
         parent = this,
-        x = 10, y = 60, w = -10, h = 40,
+        x = 10, y = 60, w = -80, h = 40,
         title = "x-callback URL key:",
         default = workingCopyKey
     }
     
+    Soda.Button{
+        parent = this,
+        x = -10, y = 60, w = 65, h = 40,
+        title = "Paste",
+        callback = function() key:inputString(pasteboard.text) end
+    }
+    
     local dav = Soda.TextEntry{
         parent = this,
-        x = 10, y = 110, w = -10, h = 40,
+        x = 10, y = 110, w = -80, h = 40,
         title = "WebDAV host:",
         default = DavHost
+    }
+    
+    Soda.Button{
+        parent = this,
+        x = -10, y = 110, w = 65, h = 40,
+        title = "Paste",
+        callback = function() dav:inputString(pasteboard.text) end
     }
     
     Soda.Button{

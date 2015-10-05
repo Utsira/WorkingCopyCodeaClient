@@ -64,7 +64,7 @@ function LocalFile:pushSingleFile(t) --(name, repo, repopath, callback)
                     title = "Write Successful",   
                     textBody = localFileStr,
                     ok = "Working Copy "..Soda.symbol.forward,
-                    alert = true,
+                    alert = true, close = true,
                     callback = function()
                         callback(pathName, localFileStr)
                         openURL("working-copy://x-callback-url/commit/?key="..workingCopyKey.."&limit=1&repo="..urlencode(t.repo).."&path="..repopath) 
