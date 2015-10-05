@@ -63,6 +63,7 @@ end
 --user inputs:
 
 function touched(touch)
+    if touch.state == BEGAN then displayMode(FULLSCREEN_NO_BUTTONS) end
     Soda.touched(touch)
 end
 
