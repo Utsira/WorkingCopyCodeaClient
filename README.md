@@ -52,7 +52,7 @@ Getting everything installed is a bit fiddly. But, you only have to follow these
   
 ## Usage 
 
-Browse your Working Copy repositories by selecting folders and files in the "Finder" pane on the left.
+Browse your Working Copy repositories by selecting folders and files in the "Finder" pane on the left. The "< Open in Working Copy" button in the top-left of the menu bar will open the selected repository in Working Copy. The close button in the top-right corner of the display exits WCCC back to Codea.
 
 WCCC supports two modes of working with repositories:
 
