@@ -6,10 +6,10 @@ A [Codea](http://codea.io) program that connects Codea to [Working Copy](http://
 
 1. [Features](#features)
 1. [Installation](#installation)
-  i. [About WebDAV](#about-webdav)
+  a. [About WebDAV](#about-webdav)
 2. [Usage](#usage)
-  i. [Single Project Repositories](#single-project-repositories)
-  i. [Multiple project repositories](#multiple-project-repositories)
+  a. [Single Project Repositories](#single-project-repositories)
+  b. [Multiple project repositories](#multiple-project-repositories)
 3. [Tutorial](#tutorial)
 
 ##Features
