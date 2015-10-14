@@ -52,8 +52,7 @@ Getting everything installed is a bit fiddly. But, you only have to follow these
   > ###About WebDAV
   > When WorkingCopy is in the background, the WebDAV server is shut off after a few minutes. WCCC detects this and automatically wakes the WebDAV up again. When this happens you'll see the same prompt that you saw on launch telling you that the WebDAV needs to be woken up. 
   > 
-  > When you press "Activate WebDAV", Working Copy will be foregrounded or opened, and the WebDAV started. When you see a blue "Connect to WebDAV server at" message in WorkingCopy, you can switch back to Codea, eg with a four-finger app-switch gesture, or, on iOS 9, by pressing the "Back to Codea" button in the top-left corner
-  > ![WebDAV is awake](https://puffinturtle.files.wordpress.com/2015/10/image2.jpeg)  
+  > When you press "Activate WebDAV", Working Copy will be foregrounded or opened, the WebDAV started, and then an automatic switch back to Codea will occur.
   
 ## Usage 
 
