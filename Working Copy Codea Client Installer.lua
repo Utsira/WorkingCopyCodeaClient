@@ -46,7 +46,7 @@ end
 
 function Soda.drawing(breakPoint) 
     --in order for gaussian blur to work, do all your drawing here
-    background(251, 251, 255, 255)
+    background(246, 245, 245)
 
     Soda.draw(breakPoint)
 end
@@ -63,6 +63,7 @@ end
 --user inputs:
 
 function touched(touch)
+    if touch.state == BEGAN then displayMode(FULLSCREEN_NO_BUTTONS) end
     Soda.touched(touch)
 end
 
@@ -92,6 +93,7 @@ UI = {}
 
 function UI.main()
     guidex, guidey = 0.33, -265
+    menuHeight = 25
     local margin = 5
     
     --[[
@@ -101,17 +103,17 @@ function UI.main()
       ]]
     
     UI.menubar = Soda.Frame{
-        x = 0, y = -0.001, w = 1, h = 20,
+        x = 0, y = -0.001, w = 1, h = menuHeight,
         shape = Soda.rect,
         title = "Working Copy \u{21c4} Codea Client",
-        label = {x = 0.5, y = 0},
+        label = {x = 0.5, y = 0.5},
         style = {shape = {fill = color(0), noStroke = true}, text = {fill = color(200), fontSize = 0.75}}
     }
     
     Soda.Button{
         parent = UI.menubar,
         title = Soda.symbol.back.." Open in Working Copy",
-        x = 0, y = 0, w = 200, h = 20,
+        x = 0, y = 0, w = 200, h = menuHeight,
       --  style = Soda.style.icon,
         shape = null,
         style = {shape = {},  text = {fill = color(200), fontSize = 0.75}},
@@ -126,20 +128,21 @@ function UI.main()
     
     Soda.CloseButton{
         parent = UI.menubar,
-        x = -0.001, y = -0.001, w = 50, h = 25,
+        x = -0.001, y = 0.5, w = 50, h = menuHeight + 10,
         shape = null,
         style = {shape = {},  text = {fill = color(200), fontSize = 1}},
         callback = function()
             close()
         end
     }
+    
     UI.console = Soda.TextScroll{
         x = guidex, y = 0, w = 0, h = 0.2,
         shape = Soda.RoundedRectangle,
         textBody = "\n#### Working Copy Codea Client ####"
     }
     
-    UI.finder = Finder(guidex, -20)
+    UI.finder = Finder(guidex, -menuHeight)
     
   --workbench = Workbench(guidex, guidey)
     
@@ -171,16 +174,30 @@ function UI.settings(title, content, ok, callback, cancel)
     
     local key = Soda.TextEntry{
         parent = this,
-        x = 10, y = 60, w = -10, h = 40,
+        x = 10, y = 60, w = -80, h = 40,
         title = "x-callback URL key:",
         default = workingCopyKey
     }
     
+    Soda.Button{
+        parent = this,
+        x = -10, y = 60, w = 65, h = 40,
+        title = "Paste",
+        callback = function() key:inputString(pasteboard.text) end
+    }
+    
     local dav = Soda.TextEntry{
         parent = this,
-        x = 10, y = 110, w = -10, h = 40,
+        x = 10, y = 110, w = -80, h = 40,
         title = "WebDAV host:",
         default = DavHost
+    }
+    
+    Soda.Button{
+        parent = this,
+        x = -10, y = 110, w = 65, h = 40,
+        title = "Paste",
+        callback = function() dav:inputString(pasteboard.text) end
     }
     
     Soda.Button{
@@ -465,7 +482,7 @@ function LocalFile:pushSingleFile(t) --(name, repo, repopath, callback)
                     title = "Write Successful",   
                     textBody = localFileStr,
                     ok = "Working Copy "..Soda.symbol.forward,
-                    alert = true,
+                    alert = true, close = true,
                     callback = function()
                         callback(pathName, localFileStr)
                         openURL("working-copy://x-callback-url/commit/?key="..workingCopyKey.."&limit=1&repo="..urlencode(t.repo).."&path="..repopath) 
@@ -797,7 +814,7 @@ function Workbench:setupUi(x,y)
     local x,y = guidex, guidey
     self.ui = {} 
    self.ui.window = Soda.Frame{
-        x = x, y = y, w = 0, h =-20,
+        x = x, y = y, w = 0, h =-menuHeight,
         title = self.name, -- "Working Copy \u{21c4} Codea Client",
         content = ""
       --  shape = Soda.RoundedRectangle,
@@ -1315,10 +1332,10 @@ function Request.base:fail(error) --if request fails, most likely we need to wak
     if error == "Could not connect to the server." then --error == "The network connection was lost." or 
        
        UI.settings(error, 
-        "Switching to Working Copy to activate the WebDAV server.\n\nWhen you see the blue ‘Connect to WebDAV server at [host]’ message, switch back to Codea (e.g. with a 4-finger swipe left, or, on iOS9, tapping the “back to Codea” in the top-left corner). \n\nMake sure the WebDAV address and x-callback URL key are both correct.",
+        "Switching to Working Copy to activate the WebDAV server. When the server has activated, automatic switch back to Codea will occur. \n\nIf you get a red error flag in Working Copy, make sure the WebDAV address and x-callback URL key in the boxes below correspond to the ones in Working Copy settings.",
         "Activate WebDAV",
         function()
-            openURL("working-copy://x-callback-url/webdav?cmd=start&key="..workingCopyKey)
+            openURL("working-copy://x-callback-url/webdav?cmd=start&key="..workingCopyKey.."&x-success="..urlencode("db-cj1xdlcmftgsyg1://"))
             tween.delay(1, function() displayMode(FULLSCREEN_NO_BUTTONS) self:start() end) --retry
         end)
     else

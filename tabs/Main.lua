@@ -45,7 +45,7 @@ end
 
 function Soda.drawing(breakPoint) 
     --in order for gaussian blur to work, do all your drawing here
-    background(251, 251, 255, 255)
+    background(246, 245, 245)
 
     Soda.draw(breakPoint)
 end

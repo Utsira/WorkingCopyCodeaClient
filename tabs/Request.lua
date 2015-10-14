@@ -21,10 +21,10 @@ function Request.base:fail(error) --if request fails, most likely we need to wak
     if error == "Could not connect to the server." then --error == "The network connection was lost." or 
        
        UI.settings(error, 
-        "Switching to Working Copy to activate the WebDAV server.\n\nWhen you see the blue ‘Connect to WebDAV server at [host]’ message, switch back to Codea (e.g. with a 4-finger swipe left, or, on iOS9, tapping the “back to Codea” in the top-left corner). \n\nMake sure the WebDAV address and x-callback URL key are both correct.",
+        "Switching to Working Copy to activate the WebDAV server. When the server has activated, automatic switch back to Codea will occur. \n\nIf you get a red error flag in Working Copy, make sure the WebDAV address and x-callback URL key in the boxes below correspond to the ones in Working Copy settings.",
         "Activate WebDAV",
         function()
-            openURL("working-copy://x-callback-url/webdav?cmd=start&key="..workingCopyKey)
+            openURL("working-copy://x-callback-url/webdav?cmd=start&key="..workingCopyKey.."&x-success="..urlencode("db-cj1xdlcmftgsyg1://"))
             tween.delay(1, function() displayMode(FULLSCREEN_NO_BUTTONS) self:start() end) --retry
         end)
     else
