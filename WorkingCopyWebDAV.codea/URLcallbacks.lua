@@ -14,25 +14,19 @@ function concatURL(url1, url2, sep)
     return url1..sep..urlencode(url2) --to chain urls, must be double-encoded.
 end
 
---[[
-function createCommitURL(repo, limit, path)
-    if path then path = "&path="..path..".lua" else path = "" end
-    local commitURL= "working-copy://x-callback-url/commit/?key="..workingCopyKey.."&repo="..repo..path.."&limit="..limit --.."&message="..urlencode(commitMessage)
-    
-    if Push_to_remote_repo then --add push command
-        commitURL = concatURL(commitURL, "working-copy://x-callback-url/push/?key="..workingCopyKey.."&repo="..repo)
+function WCcommit(repo, path, limit)
+    local limit = limit or 1
+    local url = "working-copy://x-callback-url/commit/?key="..workingCopyKey.."&limit="..limit.."&repo="..urlencode(repo)
+    if path then
+        url = url.."&path="..urlencode(path)
     end
-    return commitURL
+    openURL(url)
 end
-  ]]
 
---[[
-local function createWriteURL(repo, path, txt)
-    return "working-copy://x-callback-url/write/?key="..workingCopyKey.."&repo="..repo.."&path="..path.."&uti=public.txt&text="..urlencode(txt)    --the write command
-endo
-  
-
-function openWorkingCopy(repo)
-    openURL("working-copy://open?repo="..urlencode(repo))
-end ]]
-
+function WCopen(repo,path)
+    local url = "working-copy://open?repo="..urlencode(repo)
+    if path then
+        url = url.."&path="..urlencode(path)
+    end
+    openURL(url)  
+end

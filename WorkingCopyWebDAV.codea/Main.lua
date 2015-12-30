@@ -7,9 +7,12 @@ displayMode(FULLSCREEN_NO_BUTTONS)
 
 DavHost = readLocalData("DavHost", "http://localhost:8080")
 workingCopyKey = readLocalData("workingCopyKey", "")
+githubHome = readLocalData("githubHome", "https://raw.githubusercontent.com/user_name/")
 
 function setup()
-    parameter.watch("#Soda.items")
+    parameter.watch("workbench.path")
+    parameter.watch("workbench.repoPath")
+    parameter.watch("workbench.repo")
     Soda.setup()
     sha1.load = coroutine.create( sha1.assets)
     local projectString = readLocalData("projects", "[]")
@@ -39,11 +42,11 @@ function draw()
     --do your updating here
     pushMatrix()
     Soda.camera()
-    Soda.drawing()
+    drawing()
     popMatrix()
 end
 
-function Soda.drawing(breakPoint) 
+function drawing(breakPoint) 
     --in order for gaussian blur to work, do all your drawing here
     background(246, 245, 245)
 

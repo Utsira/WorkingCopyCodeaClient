@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Author</key>
+	<string>Unknown</string>
+	<key>Buffer Order</key>
+	<array>
+		<string>Main</string>
+		<string>UI</string>
+		<string>URLcallbacks</string>
+		<string>Finder</string>
+		<string>LocalFile</string>
+		<string>LFLink</string>
+		<string>Preview</string>
+		<string>Workbench</string>
+		<string>WBUI</string>
+		<string>WBInstaller</string>
+		<string>WBAddNew</string>
+		<string>WBCopy</string>
+		<string>WBPush</string>
+		<string>WBPull</string>
+		<string>Request</string>
+		<string>Sha1</string>
+		<string>Installer</string>
+	</array>
+	<key>Dependencies</key>
+	<array>
+		<string>Soda Sensor 6</string>
+	</array>
+	<key>Description</key>
+	<string>No description available</string>
+	<key>Icon</key>
+	<string>Icon.png</string>
+</dict>
+</plist>

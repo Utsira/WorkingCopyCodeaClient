@@ -3,6 +3,7 @@ LocalFile = class()
 function LocalFile:init(t) --(path, name, data, items, multiProject) 
     
     self.path, self.items, self.multiProject = t.path, t.items, t.multiProject
+    self.repo, self.repoPath = t.repo, t.repoPath
     self.name = t.name or ""
     self.data = t.data or ""
     self:setupUi()
@@ -33,7 +34,7 @@ function LocalFile:getLocalFiles()
     for i=1,#tabs do   
         local tabName = tabs[i]
         local tab=readProjectTab(self.projectName..":"..tabName)
-        self.localFiles[i+1]={nameNoExt = tabName, data = tab, pathName = self.path.."tabs/"..tabName..".lua", extension = "lua"}
+        self.localFiles[i+1]={nameNoExt = tabName, data = tab, pathName = self.path..tabName..".lua", extension = "lua"}
     end
 end
 
@@ -50,7 +51,7 @@ end
 
 function LocalFile:pushSingleFile(t) --(name, repo, repopath, callback)
     local name = t.name or ""
-    local repopath = t.repopath or t.name 
+    local repopath = t.repopath --or t.name 
     local callback = t.callback or null
     self:getLocalFiles()
     local localFileStr = self:concatenaFiles(self.localFiles, "lua")
@@ -67,7 +68,8 @@ function LocalFile:pushSingleFile(t) --(name, repo, repopath, callback)
                     alert = true, close = true,
                     callback = function()
                         callback(pathName, localFileStr)
-                        openURL("working-copy://x-callback-url/commit/?key="..workingCopyKey.."&limit=1&repo="..urlencode(t.repo).."&path="..repopath) 
+                        WCcommit(t.repo, repopath)
+                      --  openURL("working-copy://x-callback-url/commit/?key="..workingCopyKey.."&limit=1&repo="..urlencode(t.repo).."&path="..repopath) 
             --self.path:match("/(.-)/$")
                     end
                 }

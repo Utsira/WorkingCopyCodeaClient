@@ -12,10 +12,11 @@ function Workbench:init(t) --(path, name, data, items)
 
     --build roster of remote files
     self.remoteFiles = {}
-    self.subFolders = {}
+   -- self.subFolders = {}
     self.plistFiles = {}
     
-    --check for .plist file
+    --check for Info.plist file
+  --  printLog(t.data)
     if t.data:match("<D:href>.-Info%.plist</D:href>") then
         Request.get(t.path.."Info.plist", function(d, status) self:readPlist(d, status) end)
     else --no plist
@@ -25,36 +26,30 @@ function Workbench:init(t) --(path, name, data, items)
 end
 
 function Workbench:deactivate()
-    
-    --[[
-    self.active = false
-    self.remoteFiles = nil
-    self.localFiles = nil
-    self.rosterBuilt = false
-    self.window.title = "Working Copy \u{21c4} Codea Client"
-    self.ui.linkStatus.content = ""
-    self.ui.multiSingle:clearSelection()
-    self:unlink()
-   -- self.window:deactivate()
-    
-      ]]
-    
     for k,v in pairs(self.ui) do
-   --  v:deactivate()
         v.kill = true
     end
-    
 end
 
 function Workbench:readPlist(data, status) 
+    
     if not data then alert(status) return end
     
-    self.remoteFiles = {{pathName = self.path.."Info.plist", nameNoExt = "Info", extension = "plist", located = "true"}}
+    self.remoteFiles = {{pathName = self.path.."Info.plist", nameNoExt = "Info", extension = "plist"}}
     local array = data:match("<key>Buffer Order</key>%s-<array>(.-)</array>")
     
     for tabName in array:gmatch("<string>(.-)</string>%s") do
-        table.insert(self.remoteFiles, {nameNoExt = tabName, extension = "lua", located = false})
-        self.hasPlist = true
+        local fileLocated
+        for i,v in ipairs(self.items) do
+            if tabName == v.nameNoExt then
+                table.insert(self.remoteFiles, {nameNoExt = tabName, extension = "lua", pathName = self.path..tabName..".lua"})
+                self.hasPlist = true  
+                fileLocated = true 
+            end  
+        end
+        if not fileLocated then 
+            printLog("WARNING:", tabName, " in Info.plist not found (Info.plist should be in same folder as the files it references)")
+        end
     end
     
     self:findFilesFolders()
@@ -62,23 +57,35 @@ end
     
 function Workbench:findFilesFolders()
     for i,v in ipairs(self.items) do
-        if v.collection then
-            table.insert(self.subFolders, v)
-        elseif not self.hasPlist and v.extension == "lua" then --only add root level lua items if there is no plist
-            v.located = true
-            table.insert(self.remoteFiles, v)        
+      --  if v.collection then
+           -- table.insert(self.subFolders, v)
+      --  else
+        local inPList
+        if self.hasPlist then --if there is a plist, check this file against plist
+            for _,b in ipairs(self.remoteFiles) do
+                if v.nameNoExt == b.nameNoExt then inPList = true end
+            end
         end
+        if not inPList and v.extension == "lua" then -- add root level lua items if not in plist/there is no plist
+          --  v.located = true
+            table.insert(self.remoteFiles, v) 
+        end       
     end
     --check subfolders for lua files, compare to plist
-    if #self.subFolders > 0 then
-        for i,v in ipairs(self.subFolders) do
-            Request.properties(v.pathName, function(data, status) self:checkSubFolder(data, v.pathName) end)
-        end
-    else --no subfolders
-        self:checkRemoteFiles(#self.remoteFiles)
+
+        --roster build complete, activate controls
+    self.rosterBuilt = true
+    self.ui.copy:activate()
+    
+   -- self.ui.pushSingleSuffix:activate()
+    if self.projectName then
+        self.ui.pushInstaller:activate()
+        self.ui.push:activate()
+        self.ui.pull:activate()
     end
 end
 
+--[[
 function Workbench:checkSubFolder(data, subfolder) --nb unpredictable results if repo contains more than one folder of lua files
     if data:match("<D:href>.-%.lua</D:href>") then --contains lua files
         parsePropfind(data, 
@@ -128,4 +135,4 @@ function Workbench:checkRemoteFiles() --remove files from remoteFiles roster tha
         self.ui.push:activate()
         self.ui.pull:activate()
     end
-end
+end ]]

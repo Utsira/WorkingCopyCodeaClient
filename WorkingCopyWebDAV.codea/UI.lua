@@ -5,12 +5,6 @@ function UI.main()
     menuHeight = 25
     local margin = 5
     
-    --[[
-     UI.preview = Preview{
-        x = guidex, y = 0.2, w = 0, h = guidey,
-    }
-      ]]
-    
     UI.menubar = Soda.Frame{
         x = 0, y = -0.001, w = 1, h = menuHeight,
         shape = Soda.rect,
@@ -27,8 +21,13 @@ function UI.main()
         shape = null,
         style = {shape = {},  text = {fill = color(200), fontSize = 0.75}},
         callback = function()
-            if workbench then
-                openURL("working-copy://open?repo="..urlencode(workbench.name))
+            if #UI.finder.paths>1 then
+                local path
+                if #UI.finder.paths>2 then
+                    path = table.concat(UI.finder.titles, "/", 3)
+                end
+                WCopen(UI.finder.titles[2], path)
+                
             else
                 openURL("working-copy://open")
             end
@@ -74,7 +73,7 @@ end
 
 function UI.settings(title, content, ok, callback, cancel)
      local this = Soda.Window{
-        w = 0.7, h = 0.6, alert = true,
+        w = 0.7, h = 0.7, alert = true,
         title = title,
         content = content, 
         cancel = cancel,
@@ -83,31 +82,41 @@ function UI.settings(title, content, ok, callback, cancel)
     
     local key = Soda.TextEntry{
         parent = this,
-        x = 10, y = 60, w = -80, h = 40,
+        x = 10, y = 110, w = -10, h = 40,
         title = "x-callback URL key:",
         default = workingCopyKey
     }
     
+    --[[
     Soda.Button{
         parent = this,
         x = -10, y = 60, w = 65, h = 40,
         title = "Paste",
         callback = function() key:inputString(pasteboard.text) end
     }
+      ]]
     
     local dav = Soda.TextEntry{
         parent = this,
-        x = 10, y = 110, w = -80, h = 40,
+        x = 10, y = 160, w = -10, h = 40,
         title = "WebDAV host:",
         default = DavHost
     }
     
+    local github = Soda.TextEntry{
+        parent = this,
+        x = 10, y = 60, w = -10, h = 40,
+        title = "GitHub raw url:",
+        default = githubHome
+    }
+    --[[
     Soda.Button{
         parent = this,
         x = -10, y = 110, w = 65, h = 40,
         title = "Paste",
         callback = function() dav:inputString(pasteboard.text) end
     }
+      ]]
     
     Soda.Button{
         parent = this,
@@ -118,6 +127,8 @@ function UI.settings(title, content, ok, callback, cancel)
             saveLocalData("workingCopyKey", workingCopyKey)
             DavHost = dav:output()
             saveLocalData("DavHost", DavHost)
+            githubHome = github:output()
+            saveLocalData("githubHome", githubHome)
             this.kill = true
             callback()
         end

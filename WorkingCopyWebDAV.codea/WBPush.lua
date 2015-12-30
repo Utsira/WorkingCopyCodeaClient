@@ -2,7 +2,7 @@
 Push:
 1. read local files
 WebDAV:
-2. check if theres a remote tabs folder, and if not, create one 
+2. x check if theres a remote tabs folder, and if not, create one x
 3. verify whether remote has changed since last push by comparing hash of last push to hash of current files on remote. Warn if remote has changed since last push.
 4. write local files to remote
 5. check for & delete orphaned remote files (otherwise deleted/renamed files will remain on remote), and add new/renamed files to the remote files roster
@@ -14,19 +14,8 @@ x-callback:
 
 function Workbench:push()
     self:getLocalFiles() --1. read local files
-    
-    --2 check if theres a tabs folder, and if not, create one
-    local tabs
-    for i,v in ipairs(self.subFolders) do
-        if v.pathName:match(".-/tabs$") then tabs=true end        
-    end
-    if tabs then
-        self:verifyRemoteChanges() --3 verify whether remote has changed since last push
-    else
-        Request.newFolder(self.path.."tabs", function() 
-                self:verifyRemoteChanges() 
-            end)
-    end
+
+    self:verifyRemoteChanges() --3 verify whether remote has changed since last push
     
 end
 
@@ -135,7 +124,7 @@ function Workbench:verifyWrite()
                 Soda.Alert{
                     title = "Write Successful\n\nHash:"..remoteFileHash.."\n\nSwitching to Working Copy",   
                     callback = function()
-                        openURL("working-copy://x-callback-url/commit/?key="..workingCopyKey.."&limit=999&repo="..self.path:match("/(.-)/$")) --8. commit
+                        WCcommit(self.repo, self.repoPath, 999) --8. commit
                     end
                 }
             else --verfication failed

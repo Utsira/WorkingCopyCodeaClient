@@ -37,29 +37,30 @@ function Finder:getFileNames(data, status)
     self.items = {} 
     self.remoteFiles = {}
 
-    parsePropfind(data, function(i, t) listText[i], self.items[i] = self:addLine(t) end)
+    local containsLuaFiles = parsePropfind(data, function(i, t) listText[i], self.items[i] = self:addLine(t) end)
     
     self.window.title = self.titles[#self.titles] --self.paths[#self.paths]
-    
-    if #self.paths > 1 then 
+    if workbench then
+        workbench:deactivate()
+        workbench = nil
+    end
+    if #self.paths > 1 then
+        UI.settingsButton:hide()
+        self.backButton:show()
         
-        if #self.paths == 2 and not workbench then
+        if containsLuaFiles then       
+            --  workbench:activate(self.paths[2], self.titles[2], data, table.copy(self.items))
+            workbench = Workbench{path = self.paths[#self.paths], name = self.titles[#self.titles], data = data, items = table.copy(self.items), repo = self.titles[2], repoPath = table.concat(self.titles, "/", 3)}
             
-            UI.settingsButton:hide()
-            self.backButton:show()
-      --  workbench:activate(self.paths[2], self.titles[2], data, table.copy(self.items))
-          workbench = Workbench{path = self.paths[2], name = self.titles[2], data = data, items = table.copy(self.items)}
+      --  else
         end
     else   --depth 1
-
-      --  workbench:deactivate()
-        if workbench then workbench:deactivate() end
-        workbench = nil
-      --  UI.workbench = Workbench()
+        
         UI.settingsButton:show()
         self.backButton:hide()
     end
-    
+ 
+  --  end
     if self.list then self.list.kill = true end
     self.list = Soda.List{
         parent = self.window,
@@ -72,14 +73,15 @@ function Finder:getFileNames(data, status)
 end
 
 function parsePropfind(data, callback, callbackFinish)
-   -- printLog(data)
     local i = 0
+    local containsLuaFiles
     for pathName, info in data:gmatch("<D:href>(.-)</D:href>(.-)[\n\r]") do
         i = i + 1
         if i>1 then --the first entry is just the root
             local name = pathName:match("/([^/]-)$"):gsub("%%20", " ") --strip out path from name; put spaces back
             --print("name", name)
             local extension = name:match(".-%.(.-)$") --file extension  
+            if extension == "lua" then containsLuaFiles = true end
             local nameNoExt = name:match("(.-)%..-$")
             local collection
             if info:find("<D:resourcetype><D:collection/></D:resourcetype>") then --collection
@@ -89,22 +91,15 @@ function parsePropfind(data, callback, callbackFinish)
     end
     callbackFinish = callbackFinish or null 
     callbackFinish(i-1)
+    return containsLuaFiles
 end
 
 function Finder:addLine(t)
 
     local printName = t.name --:gsub("%%20", " ") --put spaces back
     if t.collection then
-    
         printName = "\u{1f4c2}  "..printName
-             --   table.insert(self.subFolders, name.."/")
     end
-
-    --[[
-    if extension == "lua" then
-        table.insert(self.remoteFiles, {name = name:match("(.-)%.lua$")})
-    end
-      ]]
 
     return printName, t
 end
@@ -120,7 +115,11 @@ function Finder:selectItem(selected) --sender is always self.list
  
     else
         Request.get(item.pathName, function(data)  
-            preview=Preview{path = item.pathName, name = item.name, data = data, multiProject = workbench.multiProject, repo = self.titles[2]} 
+            if item.extension == "html" then
+                openURL(DavHost..item.pathName, true)
+            else
+                preview=Preview{path = item.pathName, name = item.name, data = data, multiProject = workbench.multiProject, repo = self.titles[2]} 
+            end
         end)
     end
 end

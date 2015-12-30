@@ -1,7 +1,7 @@
 Preview = class(LocalFile)
 
 function Preview:init(t) --(path, name, data, multiProject, repo)
-    self.repo = t.repo
+  --  self.repo = t.repo
    -- printLog("repo=", t.repo)
     LocalFile.init(self, t)
     self.rosterBuilt = true --force push and pull buttons to become active if file is linked

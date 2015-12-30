@@ -26,7 +26,7 @@ end
 function LocalFile:linkDialog(instruction)
     local pathName, name = self.path, self.name
     
-    local default = name:gsub("%.lua", "")
+    local default = name:gsub("%..*$", "")
     if projects[pathName] and projects[pathName].name then
         default = projects[pathName].name
     end
