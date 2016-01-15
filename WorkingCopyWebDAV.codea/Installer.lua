@@ -8,11 +8,11 @@ local function install(data)
         table.insert(files, {name = tabName})
     end   
     --success function
-    local function success(i, name, data)
+    local function success(n, name, data)
         if not data then alert("No data", name) return end
-        print("Loaded "..i.."/"..#files..":"..name)
-        files[i].data = data
-        for i,v in ipairs(files) do
+        print("Loaded "..n.."/"..#files..":"..name)
+        files[n].data = data
+        for _,v in ipairs(files) do
             if not v.data then 
                 return --quit this function if any files have missing data
             end

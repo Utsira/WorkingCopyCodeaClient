@@ -1,6 +1,6 @@
 function Workbench:pushInstaller(t)
 
-    local localFileStr = table.concat{'local url = "', githubHome, self.repo, "/master/", self.repoPath, '/"\n', readProjectTab("Installer"):match("%-%-%[%[(.-)%]%]")}
+    local localFileStr = table.concat{"--", "# Main\n\n", 'local url = "', githubHome, self.repo, "/master/", self.repoPath, '/"\n', readProjectTab("Installer"):match("%-%-%[%[(.-)%]%]")}
     local pathName = "/"..self.repo.."/"..t.name --urlencode(self.projectName.." Installer.lua")
     printLog("Writing to ", pathName)
     printLog(localFileStr)
