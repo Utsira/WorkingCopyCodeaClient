@@ -1,6 +1,5 @@
-local url = "https://raw.githubusercontent.com/Utsira/WorkingCopyCodeaWebDAVclient/master/WorkingCopyWebDAV.codea/"
+local url = "https://raw.githubusercontent.com/Utsira/WorkingCopyCodeaClient/master/WorkingCopyWebDAV.codea/"
  
-
 local function install(data)
     --parse plist into list of tab files
     local array = data:match("<key>Buffer Order</key>%s-<array>(.-)</array>")
