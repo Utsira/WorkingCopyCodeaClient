@@ -15,8 +15,8 @@ x-callback:
 function Workbench:push()
     self:getLocalFiles() --1. read local files
 
-    self:verifyRemoteChanges() --3 verify whether remote has changed since last push
-    
+    --self:verifyRemoteChanges() --3 verify whether remote has changed since last push
+    self:pushMultiFile()
 end
 
 function Workbench:pushMultiFile()
@@ -74,11 +74,15 @@ function Workbench:deleteRemoteOrphans()
             Request.delete(v.pathName, 
             function() 
                 self:collating("Deleted", deleteList[i], deleteList, 
-                function() self:verifyWrite() end ) --6. start verification process
+                function() 
+                    --self:verifyWrite() --6. start verification process
+                    self:writeSuccessful()
+                end ) 
             end)
         end
     else
-        self:verifyWrite() --6. start verification process
+       -- self:verifyWrite() --6. start verification process
+        self:writeSuccessful()
     end
 end
 
@@ -120,18 +124,23 @@ function Workbench:verifyWrite()
             saveLocalData("projects", json.encode(projects))
             if self:verify(localFileHash, remoteFileHash) then --7. verify
                 printLog("Write verified on hash:", remoteFileHash)
-                
-                Soda.Alert{
-                    title = "Write Successful\n\nHash:"..remoteFileHash.."\n\nSwitching to Working Copy",   
-                    callback = function()
-                        WCcommit(self.repo, self.repoPath, 999) --8. commit
-                    end
-                }
+                self:writeSuccessful(remoteFileHash)
             else --verfication failed
                 UI.diffViewer("Verification failed", localFileString, remoteFileString)
             end
         end
     )
+end
+
+function Workbench:writeSuccessful(hash)
+    local hash = hash or "none"
+    
+    Soda.Alert{
+        title = "Write Successful\n\nHash:"..hash.."\n\nSwitching to Working Copy",
+        callback = function()
+            WCcommit(self.repo, self.repoPath, 999) --8. commit
+        end
+    }
 end
 
 function Workbench:verify(sha1Local, sha1Remote)
