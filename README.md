@@ -58,9 +58,11 @@ Getting everything installed is a bit fiddly. But, you only have to follow these
 
 ### v1.1
 
-+ WCCC now pushes and pulls projects using a flat folder structure (ie the lua files and the Info.plist files all in a single folder), in order to make it compatible with Codea 2.3.2's "export zipped project" and the older "export Xcode project" features. This flat structure is also much simpler to handle when using WebDAV. Previously, the lua files were in a `tabs` folder 1 level down from `Info.plist`. If you wish to pull from a repo created with an old version of WCCC, you'll need to move the `Info.plist` file into the same folder as the lua files yourself. 
++ WCCC now pushes and pulls projects using a flat folder structure (ie the lua files and the Info.plist files all in a single folder), in order to make it compatible with Codea 2.3.2's "export zipped project" and the older "export Xcode project" features. This flat structure is also much simpler to handle when using WebDAV. Previously, the lua files were in a `tabs` folder 1 level down from `Info.plist`. If you wish to pull from a repo created with an old version of WCCC, you'll need to move the `Info.plist` file into the same folder as the lua files yourself.
 
-+ SHA1 verification for write/push has been switched off, as it was too slow for large repos, and return "verfication failed" reports when he write had in fact succeeded (if a tab was renamed or deleted).
++ This means that the distinction between "single project repositories" and "multiple project repositories" that the previous version of WCCC had no longer applies. Projects are stored in folders, and WCCC is agnostic about how many project folders you place in each repository.
+
++ SHA1 verification for write/push has been switched off, as it was too slow for large projects, and return "verfication failed" reports when he write had in fact succeeded (if a tab was renamed or deleted).
   
 ## Usage 
 
