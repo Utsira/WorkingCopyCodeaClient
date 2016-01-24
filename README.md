@@ -34,7 +34,7 @@ Getting everything installed is a bit fiddly. But, you only have to follow these
 
 2. Install [Soda](https://github.com/Utsira/Soda#installation) in Codea (this handles the GUI of WCCC).
 
-3. Install WCCC in Codea: Copy the entire contents of `Working Copy Codea Client installer.lua` to the clipboard. In Codea project screen, long-press "+ Add New Project", and select "Paste into project".
+3. Install WCCC in Codea: Copy the entire contents of `Working Copy Codea Client installer.lua` to the clipboard. In Codea project screen, long-press "+ Add New Project", and select "Paste into project". Run the installer. After installing WCCC, it will quit with an error saying that Soda is not installed.
 
 4. Make Soda a dependency of WCCC: In the code editor of the WCCC project, press the + sign in the top-right corner and put a check in the box next to "Soda".
 
@@ -53,20 +53,22 @@ Getting everything installed is a bit fiddly. But, you only have to follow these
   > When WorkingCopy is in the background, the WebDAV server is shut off after a few minutes. WCCC detects this and automatically wakes the WebDAV up again. When this happens you'll see the same prompt that you saw on launch telling you that the WebDAV needs to be woken up. 
   > 
   > When you press "Activate WebDAV", Working Copy will be foregrounded or opened, the WebDAV started, and then an automatic switch back to Codea will occur.
+
+## Change log
+
+### v1.1
+
++ WCCC now pushes and pulls projects using a flat folder structure (ie the lua files and the Info.plist files all in a single folder), in order to make it compatible with Codea 2.3.2's "export zipped project" and the older "export Xcode project" features. This flat structure is also much simpler to handle when using WebDAV. Previously, the lua files were in a `tabs` folder 1 level down from `Info.plist`. If you wish to pull from a repo created with an old version of WCCC, you'll need to move the `Info.plist` file into the same folder as the lua files yourself. 
+
++ SHA1 verification for write/push has been switched off, as it was too slow for large repos, and return "verfication failed" reports when he write had in fact succeeded (if a tab was renamed or deleted).
   
 ## Usage 
 
 Browse your Working Copy repositories by selecting folders and files in the "Finder" pane on the left. The "< Open in Working Copy" button in the top-left of the menu bar will open the selected repository in Working Copy. The close button in the top-right corner of the display exits WCCC back to Codea.
 
-WCCC supports two modes of working with repositories:
+WCCC is designed to be compatible with Codea 2.3.2's "export zipped project", and the earlier "export xcode project" format. The project's tabs are saved as individual `.lua` files alongside its `Info.plist` file are saved to a single folder, named `[projectName].codea` by default. The `Info.plist` file contains the order that the tabs are in in Codea. 
 
-### 1. Single Project Repositories
-
-This is recommended for working with large projects. The repository houses a single Codea project. The project's tabs are saved as individual `.lua` files in a folder called `/tabs/`. The project's `Info.plist` file is saved to the root of the repository. This file contains the order that the tabs are in in Codea. 
-
-![A repository that houses a single project](https://puffinturtle.files.wordpress.com/2015/10/image1.png)
-
-#### Actions available in Single Project repositories:
+![Example repository](https://puffinturtle.files.wordpress.com/2015/10/image1.png)
 
 ##### Copy as a single file
 
@@ -86,31 +88,7 @@ Pulls the content of the remote repository into the Codea project. If you have p
 
 ##### Push installer to root
 
-Saves an additional `Installer.lua` file to the root of the repository. The installer contains all of the project's tabs, concatenated together into a single file using Codea's "paste-into-project" format. This makes it easy for people not using WCCC to install your project, by copying the contents of the installer, and then long pressing on the "add project" button in Codea's main screen, and selecting "paste into project". The installer files that you used to install Soda and WCCC were created in this way.
-  
-### 2. Multiple Project Repositories
-
-For smaller projects that don't require an entire repository, you can set a repository to multiple project mode. Codea projects are saved to the root of the repository as single files using Codea's "paste-into-project" format. Add a new project to the repository, or select a file in the finder to bring up actions for the file 
-
-![A file in a multiple-project repository](https://puffinturtle.files.wordpress.com/2015/10/image2.png)
-
-#### Actions available for files in Multiple Project repositories:
-
-##### Copy
-
-Places the file being viewed in the clipboard
-
-##### Link/ Relink
-
-Link the file to a Codea project. Enables Push
-
-##### Push as single file
-
-Pushes the project to the file as a single file in Codea's "paste-into-project" format
-
-##### Pull
-
-(not yet implemented)
+Saves an additional `Installer.lua` file to the root of the repository. The installer is a few lines of code that will load, save, and run all of the files contained in the project. This makes it easy for people not using WCCC to install your project, by copying the contents of the installer, and then long pressing on the "add project" button in Codea's main screen, and selecting "paste into project". The installer files that you used to install Soda and WCCC were created in this way. In order to create installer files, you need to supply WCCC with the path to your raw github user content,
 
 ## Tutorial
 
@@ -118,7 +96,7 @@ Pushes the project to the file as a single file in Codea's "paste-into-project" 
 
 A quick tutorial. We're going to use WCCC to manage its own source code, so that when updates are posted, they can easily be pulled into Codea. We're going to do this by cloning this repository. A clone is a local copy of a repository that can easily be kept in sync with the online repository. This can be done in just 3 steps.
 
-1. **Copy the URL for this repository.** Git repositories have special addresses that end in .git, but, the regular web URL for repositories on GitHub can be used as an alias for the git address, so go ahead and copy the URL in the Safari address bar (or, hitting Copy in the action menu also copies the URL)
+1. **Copy the URL for this repository.** Git repositories have special addresses that end in .git, but, the regular web URL for repositories on GitHub can be used as an alias for the git address, so go ahead and copy the URL in the Safari address bar (or, hitting Copy in the action menu of iOS Safari also copies the URL)
 
 2. **Clone the repository in Working Copy.** Launch Working Copy. If you are in a repository, press the back button until you get back to the root. At the top of the left-hand file browser pane, press + to add a new repository, and then press "Clone". 
   ![clone dialog](https://puffinturtle.files.wordpress.com/2015/10/image7.jpeg) 
